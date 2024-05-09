@@ -35,9 +35,11 @@ workflows:
   example:
     jobs:
       - test
-      - build:
-          requires:
+      - build
+      - deploy
+#      - build:
+#          requires:
 #            - test
-      - deploy:
-          requires:
+#      - deploy:
+#          requires:
 #            - test
