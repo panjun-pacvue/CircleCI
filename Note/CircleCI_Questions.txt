@@ -1,0 +1,427 @@
+当接手一个 CircleCI 项目时，以下是你可能需要注意的一些要点以及可以询问的重要问题：
+
+1. **项目概况**：
+   - 了解项目的基本信息，包括其功能、技术栈、主要组成部分等。
+   - 询问关于项目的整体架构和目标，以及其与 CircleCI 的集成方式。
+
+2. **CircleCI 配置**：
+   - 查看 CircleCI 的配置文件（`.circleci/config.yml`），了解项目的构建流程、作业定义、环境变量设置等。
+   - 确保熟悉 CircleCI 的基本概念，如作业（jobs）、工作流（workflows）、环境变量等。
+   - 询问是否有特定的构建或部署需求，例如测试覆盖率、代码质量检查、部署流程等。
+
+3. **环境配置**：
+   - 检查 CircleCI 的环境变量(environment variables)设置，了解是否有敏感信息(sensitive information)或重要凭据(essential credential)存储在环境变量中。
+   - 确保了解项目所需的各种凭据（例如 API 密钥、数据库凭据等）是如何管理和存储的。
+   - Some of the problems encountered so far are due to missing environment variables,
+        but we don't have information about these environment variables,
+        so I'd like to know how we store this sensitive information and configure them in our projects.
+
+4. **构建和部署流程**：
+   - 了解项目的构建、测试和部署流程是如何组织和执行的。
+   - 确保了解关键步骤，包括构建命令、测试命令、部署策略等。
+   - I think it would be easier to create a new project on github and have it automatically compile on circleci.
+
+5. **持续集成与持续部署（CI/CD）**：
+   - 询问关于 CI/CD 的实践，包括持续集成和持续部署的自动化程度、部署到哪些环境以及是否有回滚策略(Rollback Policy)等。
+   - 了解项目中是否有预发布环境、生产环境等不同的部署阶段，并确保了解它们的配置和流程。
+
+6. **文档和注释**：
+   - 查看项目的文档和注释，了解项目的基本结构、关键组件和重要概念。
+   - 确保有足够的文档和注释，以便未来的维护和改进工作。
+
+7. **风险点和改进机会**：
+   - 询问关于项目中的风险点和改进机会，例如性能问题、安全漏洞、持续集成中的瓶颈等。
+   - 确保了解团队对于这些问题的认识和应对策略。
+   - Is there any known issue with performance or security vulnerabilities in the deployment of circleci?
+   Proactive security is a top priority at CircleCI, - 主动安全是 CircleCI 的首要任务
+
+8. **团队沟通和支持**：
+   - 确保了解团队中的其他成员，包括他们在项目中的角色和责任。
+   - 询问关于团队内部沟通和协作方式，以及项目中可能需要的支持或帮助。
+
+通过问这些问题，你可以更好地了解项目的当前状态、需要关注的重点以及可能的改进方向，从而更好地准备接手项目的管理和维护工作。
+
+horizontal line
+vertical line
+
+
+
+1.circleci  project与orgnazition相关配置（当前没有权限）？
+2.aws账户信息,（accountid,AWS_DEFAULT_REGION,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,AWS_SESSION_TOKEN)，申请新的账户region的选择
+3.vault服务器动态认证的使用场景是什么?与vpn的关联？现在认证报错：
+	URL: PUT https://vault-internal.helium10-dev.com/v1/auth/jwt/login
+	Code: 400. Errors:
+	* error validating claims: claim "oidc.circleci.com/project-id" does not match any associated bound claim values
+	Error reading aws-ci-assumed/creds/ci-h10-research-tools-api: Error making API request.
+
+	参数如下：
+	      VAULT_ADDR: "https://vault-internal.helium10-dev.com"
+          VAULT_ROLE: "ci-h10-research-tools-api"
+          AWS_VAULT_ROLE: "ci-h10-research-tools-api"
+		  VAULT_AWS_AUTH_PATH: "aws-ci-assumed"
+		  CIRCLE_OIDC_TOKEN ???
+
+4.python环境变量的场景：Sonarcloud/Composer_auth/SHORT_GIT_HASH
+	    env = {
+        'CIRCLE_BRANCH': os.environ.get('CIRCLE_BRANCH'),
+        'CIRCLE_SHA1': os.environ.get('CIRCLE_SHA1'),
+        'CIRCLE_TAG': os.environ.get('CIRCLE_TAG'),
+        'CIRCLE_USERNAME': os.environ.get('CIRCLE_USERNAME'),
+        'CIRCLE_WORKFLOW_ID': os.environ.get('CIRCLE_WORKFLOW_ID'),
+        'ECR_URI': _get_ecr_uri(),
+    }
+
+5.公司的ECR仓库是否有多个，根据dev or production环境来区分，每个仓库存放的镜像不一样？（看到项目中现有的AWS ECR repository uri有多个，每个account_id对应一个uri）
+6.h10p-helm.yaml 中部署工作流含义与变量设置（helm与EKS的交互）
+
+
+
+
+1.CircleCI Project Settings的权限， 我们现在需要给自己的 Projects配置相关的环境变量，希望可以参考已经存在的项目的project settings来进行配置，所以需要申请权限。
+现在根据已有的5个项目的环境变量，我们需要分别对他们配置以下环境变量：
+App,Using environment variables from project settings and/or contexts:
+  AWS_DEFAULT_REGION=**REDACTED**
+  CIRCLE_OIDC_TOKEN=**REDACTED**
+  CIRCLE_OIDC_TOKEN_V2=**REDACTED**
+  COMPOSER_AUTH=**REDACTED**
+  DOCKERHUB_HOST=**REDACTED**
+  DOCKERHUB_PASSWORD=**REDACTED**
+  DOCKERHUB_USERNAME=**REDACTED**
+  GITHUB_ACCESS_TOKEN=**REDACTED**
+  GRAFANA_API_KEY=**REDACTED**
+  OVPN_B64=**REDACTED**
+  SLACK_ACCESS_TOKEN=**REDACTED**
+  SLACK_CHANNEL=**REDACTED**
+  SLACK_USERS=**REDACTED**
+
+ds-walmart-scraping,Using environment variables from project settings and/or contexts:
+  AWS_DEFAULT_REGION=**REDACTED**
+  CIRCLE_OIDC_TOKEN=**REDACTED**
+  CIRCLE_OIDC_TOKEN_V2=**REDACTED**
+  CIRCLE_PLUGIN_TEST=**REDACTED**
+  GITHUB_API_TOKEN=**REDACTED**
+  REVIEWDOG_TOKEN=**REDACTED**
+  SONAR_TOKEN=**REDACTED**
+
+research-tools-api,Using environment variables from project settings and/or contexts:
+  AWS_DEFAULT_REGION=**REDACTED**
+  CIRCLE_OIDC_TOKEN=**REDACTED**
+  CIRCLE_OIDC_TOKEN_V2=**REDACTED**
+  CIRCLE_PLUGIN_TEST=**REDACTED**
+  COMPOSER_AUTH=**REDACTED**
+  GITHUB_API_TOKEN=**REDACTED**
+  GRAFANA_API_KEY=**REDACTED**
+  OVPN_B64=**REDACTED**
+  REVIEWDOG_TOKEN=**REDACTED**
+  SLACK_USERS=**REDACTED**
+  SONAR_TOKEN=**REDACTED**
+
+keywords-api,Using environment variables from project settings and/or contexts:
+  AWS_DEFAULT_REGION=**REDACTED**
+  CIRCLE_OIDC_TOKEN=**REDACTED**
+  CIRCLE_OIDC_TOKEN_V2=**REDACTED**
+  CIRCLE_PLUGIN_TEST=**REDACTED**
+  COMPOSER_AUTH=**REDACTED**
+  GRAFANA_API_KEY=**REDACTED**
+  OVPN_B64=**REDACTED**
+  REVIEWDOG_TOKEN=**REDACTED**
+  SLACK_ACCESS_TOKEN=**REDACTED**
+  SLACK_USERS=**REDACTED**
+
+walmart-profits-backend,Using environment variables from project settings and/or contexts:
+  AWS_DEFAULT_REGION=**REDACTED**
+  CIRCLE_OIDC_TOKEN=**REDACTED**
+  CIRCLE_OIDC_TOKEN_V2=**REDACTED**
+  CIRCLE_PLUGIN_TEST=**REDACTED**
+  COMPOSER_AUTH=**REDACTED**
+  REVIEWDOG_GITHUB_API_TOKEN=**REDACTED**
+  REVIEWDOG_TOKEN=**REDACTED**
+  SONAR_TOKEN=**REDACTED**
+
+
+
+2. 需要申请AWS账户，里面需要包含这些参数信息 $AWS_ACCOUNT_ID,$AWS_DEFAULT_REGION,$AWS_ACCESS_KEY_ID,$AWS_SECRET_ACCESS_KEY,$AWS_SESSION_TOKEN
+      - h10p-vault/init-dynamic-aws-creds:
+          <<: *pr-filter
+          name: "Init dynamic AWS creds (stage)"
+          VAULT_ADDR: "https://vault-internal.helium10-dev.com"
+          VAULT_ROLE: "h10-vault-ci-ro-role"
+          AWS_VAULT_ROLE: "h10-vault-ci-ro-role"
+这个 CircleCI 的 job 是用来初始化动态的 AWS 凭证的。它使用了 h10p-vault/init-dynamic-aws-creds 这个 orb，orb 在 CircleCI 中是一种可重用的配置片段，可以包含一些 job、executor 或者 command 的定义。  这个 job 的名称是 "Init dynamic AWS creds (stage)"，它使用了 *pr-filter 这个 anchor，这意味着它会在除了 master 分支以外的所有分支上运行。  这个 job 的配置中还包含了三个环境变量：
+VAULT_ADDR：Vault 的地址，Vault 是一种用来管理秘钥、证书和其他高价值的秘密的工具。
+VAULT_ROLE：在 Vault 中的角色，这个角色可能定义了一些权限，比如可以访问哪些秘密。
+AWS_VAULT_ROLE：在 AWS Vault 中的角色，这个角色可能定义了一些权限，比如可以访问哪些 AWS 的资源。
+总的来说，这个 job 的作用是在非 master 分支上，初始化 AWS 的动态凭证，这些凭证可能会被后续的 job 使用，以便访问 AWS 的资源。
+
+3.vault服务器动态认证的使用场景是什么?与vpn的关联？现在认证报错：
+	URL: PUT https://vault-internal.helium10-dev.com/v1/auth/jwt/login
+	Code: 400. Errors:
+	* error validating claims: claim "oidc.circleci.com/project-id" does not match any associated bound claim values
+	Error reading aws-ci-assumed/creds/ci-h10-research-tools-api: Error making API request.
+
+	参数如下：
+	      VAULT_ADDR: "https://vault-internal.helium10-dev.com"
+          VAULT_ROLE: "ci-h10-research-tools-api"
+          AWS_VAULT_ROLE: "ci-h10-research-tools-api"
+		  VAULT_AWS_AUTH_PATH: "aws-ci-assumed"
+		  CIRCLE_OIDC_TOKEN ???
+
+
+Vault 是一个动态认证的服务器，这个Vault里面存储了AWS的凭据。
+$CIRCLE_OIDC_TOKEN 是一个环境变量，它在 CircleCI 的 job 中被使用，这个环境变量的值是从一个 JSON 文件中读取的，这个文件的路径是由 << parameters.path_to_vault >>/vault/token.json 指定的， << parameters.path_to_vault >> 是 CircleCI 配置文件中的一个参数，它的值应该在 job 的定义中被指定 （默认parameters.path_to_vault 是空的）
+/vault/token.json 是 Vault 的 token 文件，这个文件包含了用于访问 Vault 的 token。这个 token 应该被妥善保管，并且只有需要访问 Vault 的服务才能获取到这个 token。
+在 h10p-vault/init-dynamic-aws-creds 这个 job 中，$CIRCLE_OIDC_TOKEN 可能被用于初始化 AWS 的动态凭证。这个环境变量的值可能被用于访问 Vault，从 Vault 中获取 AWS 的凭证。
+总的来说，$CIRCLE_OIDC_TOKEN 是一个环境变量，它的值是从 Vault 的 token 文件中读取的，这个文件的路径是由 << parameters.path_to_vault >>/vault/token.json 指定的。这个环境变量的值被用于访问 Vault，从 Vault 中获取 AWS 的凭证。  在获取这个token之前会使用vpn，然后在获取完AWS certendial之后会关闭VPN
+
+
+
+Orbs/helium10/h10p-vault@0.0.74
+# This code is licensed from CircleCI to the user under the MIT license.
+# See here for details: https://circleci.com/developer/orbs/licensing
+version: "2.1"
+
+description: |
+  This orb provides commands relating to Helium10 Vault.
+
+orbs:
+  h10-vpn: helium10/h10p-vpn@0.0
+  h10-common-build: helium10/h10p-common-build@0.0
+
+commands:
+  install-vault:
+    description: |
+      Install Vault.
+    parameters:
+      version:
+        type: string
+        default: "1.12.2"
+    steps:
+      - run:
+          name: Install Vault and prerequisites
+          command: |
+            vault -h && exit 0 || echo "Installing vault"
+            # only runs if vault command above fails
+            cd /tmp
+            wget https://releases.hashicorp.com/vault/<< parameters.version >>/vault_<< parameters.version >>_linux_amd64.zip
+            unzip vault_<< parameters.version >>_linux_amd64.zip
+            sudo mv vault /usr/local/bin
+            vault -h
+
+  init-agent:
+    description: |
+      Initialize Vault and load secrets into environment variables.
+    parameters:
+      VAULT_ADDR:
+        type: string
+        default: ""
+      environment:
+        type: string
+        default: ""
+      path_to_vault:
+        type: string
+        default: "."
+    steps:
+      - install-vault
+      - h10-vpn/connect-to-h10-vpn
+
+      - run:
+          name: Auto-authenticate with Vault
+          command: |
+            if [ ! -d "<< parameters.path_to_vault >>/vault" ]; then
+              echo "Vault path not exists, skipping ..."
+            else
+              echo $CIRCLE_OIDC_TOKEN > << parameters.path_to_vault >>/vault/token.json
+              export ENVIRONMENT=<< parameters.environment >> && echo "export ENVIRONMENT=<< parameters.environment >>" >> $BASH_ENV
+              export VAULT_ADDR=<< parameters.VAULT_ADDR >> && echo "export VAULT_ADDR=$VAULT_ADDR" >> $BASH_ENV
+              sudo apt update && sudo apt install gettext-base
+              envsubst < << parameters.path_to_vault >>/vault/agent.hcl.tpl > << parameters.path_to_vault >>/vault/agent.hcl
+              envsubst < << parameters.path_to_vault >>/vault/secrets.ctmpl.tpl > << parameters.path_to_vault >>/vault/secrets.ctmpl
+              vault agent -config=<< parameters.path_to_vault >>/vault/agent.hcl
+            fi
+
+      - run:
+          name: Set secrets in to environment variables from Vault
+          command: |
+            if [ ! -d "<< parameters.path_to_vault >>/vault" ]; then
+              echo "Vault path not exists, skipping ..."
+            else
+              # In order to properly expose values in Environment, we _source_ the shell values written by agent
+              source << parameters.path_to_vault >>/vault/setenv
+            fi
+
+      - h10-vpn/disconnect-from-h10-vpn
+
+  init-dynamic-aws-creds:
+    description: |
+      Initialize Vault and load aws secrets into environment variables.
+    parameters:
+      VAULT_ADDR:
+        type: string
+        default: ""
+      VAULT_ROLE:
+        type: string
+        default: ""
+      VAULT_AWS_AUTH_PATH:
+        type: string
+        default: "aws-ci-assumed"
+      AWS_VAULT_ROLE:
+        type: string
+        default: ""
+    steps:
+      - run:
+          name: Get aws dynamic credentials from Vault
+          command: |
+            set -e
+            vault --version
+            export VAULT_FORMAT="json"
+            export VAULT_ADDR=<< parameters.VAULT_ADDR >>
+            export VAULT_TOKEN=$(vault write -field=token auth/jwt/login role=<< parameters.VAULT_ROLE >> jwt=$CIRCLE_OIDC_TOKEN | tr -d '"')
+            export CREDS=$(vault read << parameters.VAULT_AWS_AUTH_PATH >>/creds/<< parameters.AWS_VAULT_ROLE >>)
+            echo "[] Vault credentials were successfully retrieved"
+
+            # Save the credentials to environment variables for use in later steps
+            export AWS_DEFAULT_REGION=us-east-1 && echo "export AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION" >> $BASH_ENV
+            export AWS_ACCESS_KEY_ID=$(echo ${CREDS} | jq -r .data.access_key) && echo "export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" >> $BASH_ENV
+            export AWS_SECRET_ACCESS_KEY=$(echo ${CREDS} | jq -r .data.secret_key) && echo "export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >> $BASH_ENV
+            export AWS_SESSION_TOKEN=$(echo ${CREDS} | jq -r .data.security_token) && echo "export AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN" >> $BASH_ENV
+            echo "[] AWS credentials were successfully set"
+      - run:
+          name: Configure aws cli
+          command: |
+            aws configure set default.region us-east-1
+            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+            aws configure set aws_session_token $AWS_SESSION_TOKEN
+
+      - persist_to_workspace:
+          root: /root
+          paths:
+            - .aws
+
+      - save_cache:
+          key: aws-temp-user-{{ .Environment.CIRCLE_SHA1 }}-$CIRCLE_WORKFLOW_ID
+          paths:
+            - ../.aws
+
+jobs:
+  init-agent:
+    parameters:
+      VAULT_ADDR:
+        type: string
+        default: ""
+      environment:
+        type: string
+        default: ""
+      path_to_vault:
+        type: string
+        default: "."
+    machine:
+      image: ubuntu-2004:202010-01
+      docker_layer_caching: true
+    steps:
+      - init-agent:
+          VAULT_ADDR: << parameters.VAULT_ADDR >>
+          environment: << parameters.environment >>
+          path_to_vault: << parameters.path_to_vault >>
+
+  init-dynamic-aws-creds:
+    executor: << parameters.executor >>
+    resource_class: << parameters.resource-class >>
+    parameters:
+      VAULT_ADDR:
+        type: string
+        default: ""
+      VAULT_ROLE:
+        type: string
+        default: ""
+      VAULT_AWS_AUTH_PATH:
+        type: string
+        default: "aws-ci-assumed"
+      AWS_VAULT_ROLE:
+        type: string
+        default: ""
+      executor:
+        type: executor
+        default: "h10-common-build/default"
+      resource-class:
+        type: string
+        default: "helium10/h10-eks-runner"
+      enable-vpn:
+        type: boolean
+        default: false
+    steps:
+      - when:
+          condition: << parameters.enable-vpn >>
+          steps:
+            - h10-vpn/connect-to-h10-vpn
+      - init-dynamic-aws-creds:
+          VAULT_ADDR: << parameters.VAULT_ADDR >>
+          VAULT_ROLE: << parameters.VAULT_ROLE >>
+          VAULT_AWS_AUTH_PATH: << parameters.VAULT_AWS_AUTH_PATH >>
+          AWS_VAULT_ROLE: << parameters.AWS_VAULT_ROLE >>
+      - when:
+          condition: << parameters.enable-vpn >>
+          steps:
+            - h10-vpn/disconnect-from-h10-vpn
+
+
+
+
+5.ECR相关的问题， ECR地址是由$AWS_ACCOUNT_ID和$AWS_DEFAULT_REGION组成的，我们是怎么区分不同的环境的（dev/test/prod），我的理解$AWS_DEFAULT_REGION是一个默认值，那么是否对于不同的环境我们是使用不同的$AWS_ACCOUNT_ID来进行区分的？  因为我们之前的理解在build image的时候是需要打一个tag的，但是现在看起来可能并不是按照tag进行区分的。
+ECR_URL 举个例子：  436598850111.dkr.ecr.us-east-1.amazonaws.com
+
+Orbs/helium10/h10-ecr-multiarch-build/init
+- Write the ECR url to ecr.uri.
+- Authenticate local docker with the ECR repo.
+
+description: |
+  - Write the ECR url to ecr.uri.
+  - Authenticate local docker with the ECR repo.
+steps:
+  - run:
+      name: Authenticate Docker
+      command: |
+        AWS_ACCOUNT_ID=$(\
+          aws --output yaml\
+          sts get-caller-identity\
+          | grep Account\
+          | sed "s/Account: '//"\
+          | sed "s/'//")
+        ECR_URL="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com"
+        echo $ECR_URL > ecr.uri
+        DOCKER_PASSWORD=$(\
+          aws ecr get-login-password\
+          --region $AWS_DEFAULT_REGION )
+        docker login\
+          --username AWS\
+          --password $DOCKER_PASSWORD\
+          $ECR_URL
+
+
+
+
+
+6. 没有完全看懂Kubernetes 就究竟是怎么从ECR拉取镜像并部署的，文档里面看起来Kubernetes 是个cluster环境，还是一个比较复杂的东西，我需要了解一下helm是怎么与EKS进行交互的，以及部署工作流的含义和变量设置。
+https://circleci.com/developer/orbs/orb/helium10/h10p-helm#commands-setup-kube
+
+
+
+
+
+
+CircleCI:
+1. 尝试修改 CircleCI 的配置来移除Vault 的
+2. 和Michael
+
+
+CircleCI：
+1. 尝试修改CIrcleCI的配置文件，移除Vault的认证，直接使用AWS的凭证
+2. 和Michael联系并寻求一些关于staging环境搭建的建议
+
+
+
+
+
+
+
+
